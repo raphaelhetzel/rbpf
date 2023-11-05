@@ -15,6 +15,8 @@
 //! the list of the operation codes: <https://github.com/iovisor/bpf-docs/blob/master/eBPF.md>
 
 use byteorder::{ByteOrder, LittleEndian};
+use alloc::vec;
+
 
 /// Maximum number of instructions in an eBPF program.
 pub const PROG_MAX_INSNS: usize = 4096;
@@ -500,7 +502,7 @@ impl Insn {
     /// };
     /// assert_eq!(insn.to_vec(), prog);
     /// ```
-    pub fn to_vec(&self) -> Vec<u8> {
+    pub fn to_vec(&self) -> vec::Vec<u8> {
         vec![
             self.opc,
             self.src.wrapping_shl(4) | self.dst,
@@ -607,7 +609,7 @@ pub fn get_insn(prog: &[u8], idx: usize) -> Insn {
 ///     },
 /// ]);
 /// ```
-pub fn to_insn_vec(prog: &[u8]) -> Vec<Insn> {
+pub fn to_insn_vec(prog: &[u8]) -> vec::Vec<Insn> {
     if prog.len() % INSN_SIZE != 0 {
         panic!("Error: eBPF program length must be a multiple of {:?} octets",
                INSN_SIZE);

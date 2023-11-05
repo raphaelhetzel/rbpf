@@ -6,7 +6,14 @@
 use asm_parser::{Instruction, Operand, parse};
 use ebpf;
 use ebpf::Insn;
-use std::collections::HashMap;
+use alloc::collections::BTreeMap;
+
+use alloc::string::ToString;
+use alloc::format;
+use alloc::string::String;
+use alloc::vec::Vec;
+use alloc::vec;
+
 use self::InstructionType::{AluBinary, AluUnary, LoadAbs, LoadInd, LoadImm, LoadReg, StoreImm,
                             StoreReg, JumpUnconditional, JumpConditional, Call, Endian, NoOperand};
 use asm_parser::Operand::{Integer, Memory, Register, Nil};
@@ -28,8 +35,8 @@ enum InstructionType {
     NoOperand,
 }
 
-fn make_instruction_map() -> HashMap<String, (InstructionType, u8)> {
-    let mut result = HashMap::new();
+fn make_instruction_map() -> BTreeMap<String, (InstructionType, u8)> {
+    let mut result = BTreeMap::new();
 
     let alu_binary_ops = [("add", ebpf::BPF_ADD),
                           ("sub", ebpf::BPF_SUB),
@@ -235,7 +242,7 @@ fn assemble_internal(parsed: &[Instruction]) -> Result<Vec<Insn>, String> {
 pub fn assemble(src: &str) -> Result<Vec<u8>, String> {
     let parsed = (parse(src))?;
     let insns = (assemble_internal(&parsed))?;
-    let mut result: Vec<u8> = vec![];
+    let mut result: vec::Vec<u8> = vec![];
     for insn in insns {
         result.extend_from_slice(&insn.to_array());
     }

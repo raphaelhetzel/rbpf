@@ -5,9 +5,12 @@
 // Copyright 2016 6WIND S.A. <quentin.monnet@6wind.com>
 //      (Translation to Rust, MetaBuff/multiple classes addition, hashmaps for helpers)
 
-use std::collections::HashMap;
-use std::io::{Error, ErrorKind};
+use alloc::collections::BTreeMap;
+use crate::error::Error;
+use alloc::format;
+use alloc::vec;
 
+use alloc::string::ToString;
 use ebpf;
 
 fn check_mem(addr: u64, len: usize, access_type: &str, insn_ptr: usize,
@@ -22,7 +25,7 @@ fn check_mem(addr: u64, len: usize, access_type: &str, insn_ptr: usize,
         return Ok(())
     }
 
-    Err(Error::new(ErrorKind::Other, format!(
+    Err(Error::new(format!(
         "Error: out of bounds memory {} (insn #{:?}), addr {:#x}, size {:?}\nmbuff: {:#x}/{:#x}, mem: {:#x}/{:#x}, stack: {:#x}/{:#x}",
         access_type, insn_ptr, addr, len,
         mbuff.as_ptr() as u64, mbuff.len(),
@@ -33,13 +36,12 @@ fn check_mem(addr: u64, len: usize, access_type: &str, insn_ptr: usize,
 
 #[allow(unknown_lints)]
 #[allow(cyclomatic_complexity)]
-pub fn execute_program(prog_: Option<&[u8]>, mem: &[u8], mbuff: &[u8], helpers: &HashMap<u32, ebpf::Helper>) -> Result<u64, Error> {
+pub fn execute_program(prog_: Option<&[u8]>, mem: &[u8], mbuff: &[u8], helpers: &BTreeMap<u32, ebpf::Helper>) -> Result<u64, Error> {
     const U32MAX: u64 = u32::MAX as u64;
 
     let prog = match prog_ {
         Some(prog) => prog,
-        None => Err(Error::new(ErrorKind::Other,
-                    "Error: No program set, call prog_set() to load one"))?,
+        None => Err(Error::new("Error: No program set, call prog_set() to load one".to_string()))?,
     };
     let stack = vec![0u8;ebpf::STACK_SIZE];
 
@@ -340,7 +342,7 @@ pub fn execute_program(prog_: Option<&[u8]>, mem: &[u8], mbuff: &[u8], helpers: 
             ebpf::CALL       => if let Some(function) = helpers.get(&(insn.imm as u32)) {
                 reg[0] = function(reg[1], reg[2], reg[3], reg[4], reg[5]);
             } else {
-                Err(Error::new(ErrorKind::Other, format!("Error: unknown helper function (id: {:#x})", insn.imm as u32)))?;
+                Err(Error::new(format!("Error: unknown helper function (id: {:#x})", insn.imm as u32)))?;
             },
             ebpf::TAIL_CALL  => unimplemented!(),
             ebpf::EXIT       => return Ok(reg[0]),

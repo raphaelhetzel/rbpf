@@ -6,10 +6,10 @@ version = "0.2.0"
 authors = ["Quentin <quentin@isovalent.com>"]
 
 # Additional metadata for packaging
-description = "Virtual machine and JIT compiler for eBPF programs"
+description = "Virtual machine for eBPF programs"
 repository = "https://github.com/qmonnet/rbpf"
 readme = "README.md"
-keywords = ["BPF", "eBPF", "interpreter", "JIT", "filtering"]
+keywords = ["BPF", "eBPF", "interpreter", "filtering"]
 license = "Apache-2.0/MIT"
 
 # Packaging directives
@@ -29,13 +29,6 @@ libc = "0.2"
 time = "0.2"
 byteorder = "1.2"
 
-# Optional Dependencies for the CraneLift JIT
-cranelift-codegen = { version = "0.99", optional = true }
-cranelift-frontend = { version = "0.99", optional = true }
-cranelift-jit = { version = "0.99", optional = true }
-cranelift-native = { version = "0.99", optional = true }
-cranelift-module = { version = "0.99", optional = true }
-
 [dev-dependencies]
 
 elf = "0.0.10"
@@ -44,10 +37,3 @@ hex = "0.4.3"
 
 [features]
 default = []
-cranelift = [
-    "dep:cranelift-codegen",
-    "dep:cranelift-frontend",
-    "dep:cranelift-jit",
-    "dep:cranelift-native",
-    "dep:cranelift-module",
-]

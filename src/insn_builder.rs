@@ -4,6 +4,7 @@
 //! Module provides API to create eBPF programs by Rust programming language
 
 use ebpf::*;
+use alloc::vec;
 
 /// Represents single eBPF instruction
 pub trait Instruction: Sized {
@@ -73,7 +74,7 @@ pub trait IntoBytes {
 
 /// General implementation of `IntoBytes` for `Instruction`
 impl<'i, I: Instruction> IntoBytes for &'i I {
-    type Bytes = Vec<u8>;
+    type Bytes = vec::Vec<u8>;
 
     /// transform immutable reference of `Instruction` into `Vec<u8>` with size of 8
     /// [ 1 byte ,      1 byte      , 2 bytes,  4 bytes  ]
@@ -96,7 +97,7 @@ impl<'i, I: Instruction> IntoBytes for &'i I {
 /// BPF instruction stack in byte representation
 #[derive(Default)]
 pub struct BpfCode {
-    instructions: Vec<u8>
+    instructions: vec::Vec<u8>
 }
 
 impl BpfCode {

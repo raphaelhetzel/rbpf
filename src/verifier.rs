@@ -20,11 +20,12 @@
 
 
 use ebpf;
-use std::io::{Error, ErrorKind};
+use crate::error::Error;
+use alloc::format;
 
 fn reject<S: AsRef<str>>(msg: S) -> Result<(), Error> {
     let full_msg = format!("[Verifier] Error: {}", msg.as_ref());
-    Err(Error::new(ErrorKind::Other, full_msg))
+    Err(Error::new(full_msg))
 }
 
 fn check_prog_len(prog: &[u8]) -> Result<(), Error> {

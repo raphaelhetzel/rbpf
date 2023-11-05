@@ -18,7 +18,6 @@
 
 extern crate libc;
 
-use std::u64;
 use time;
 
 // Helpers associated to kernel helpers
@@ -96,7 +95,7 @@ pub const BPF_TRACE_PRINTK_IDX: u32 = 6;
 #[allow(dead_code)]
 #[allow(unused_variables)]
 pub fn bpf_trace_printf (unused1: u64, unused2: u64, arg3: u64, arg4: u64, arg5: u64) -> u64 {
-    println!("bpf_trace_printf: {arg3:#x}, {arg4:#x}, {arg5:#x}");
+    // println!("bpf_trace_printf: {arg3:#x}, {arg4:#x}, {arg5:#x}");
     let size_arg = | x | {
         if x == 0 {
             1

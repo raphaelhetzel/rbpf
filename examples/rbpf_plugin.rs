@@ -15,8 +15,6 @@ fn _unwind(a: u64, _b: u64, _c: u64, _d: u64, _e: u64) -> u64
 // It reads the program from stdin.
 fn main() {
     let mut args: Vec<String> = std::env::args().collect();
-    let mut jit : bool = false;
-    let mut cranelift : bool = false;
     let mut program_text = String::new();
     let mut memory_text = String::new();
 
@@ -36,24 +34,6 @@ fn main() {
             "--help" => {
                 println!("Usage: rbpf_plugin [memory] < program");
                 return;
-            },
-            "--jit" => {
-                #[cfg(windows)] {
-                    println!("JIT not supported on Windows");
-                    return;
-                }
-                #[cfg(not(windows))] {
-                    jit = true;
-                }
-            },
-            "--cranelift" => {
-                cranelift = true;
-
-                #[cfg(not(feature = "cranelift"))] {
-                    let _ = cranelift;
-                    println!("Cranelift is not enabled");
-                    return;
-                }
             }
             "--program" => {
                 if args.len() < 2 {
@@ -92,29 +72,6 @@ fn main() {
     vm.register_helper(5, _unwind).unwrap();
 
     let result : u64;
-    if jit {
-        #[cfg(windows)] {
-            println!("JIT not supported on Windows");
-            return;
-        }
-        #[cfg(not(windows))] {
-            unsafe {
-                vm.jit_compile().unwrap();
-                result = vm.execute_program_jit(&mut memory).unwrap();
-            }
-        }
-    } else if cranelift {
-        #[cfg(not(feature = "cranelift"))] {
-            println!("Cranelift is not enabled");
-            return;
-        }
-        #[cfg(feature = "cranelift")] {
-            vm.cranelift_compile().unwrap();
-            result = vm.execute_program_cranelift(&mut memory).unwrap();
-        }
-    }
-    else {
-        result = vm.execute_program(&mut memory).unwrap();
-    }
+    result = vm.execute_program(&mut memory).unwrap();
     println!("{result:x}");
 }

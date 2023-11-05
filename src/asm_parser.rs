@@ -12,6 +12,9 @@ use combine::{
     attempt, between, eof, many, many1, one_of, optional, sep_by, EasyParser, ParseError, Parser,
     Stream,
 };
+use alloc::string::ToString;
+use alloc::string::String;
+use alloc::vec::Vec;
 
 /// Operand of an instruction.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -111,6 +114,9 @@ mod tests {
 
     use super::{ident, instruction, integer, operand, parse, register, Instruction, Operand};
     use combine::Parser;
+
+    use alloc::vec;
+    use alloc::string::ToString;
 
     // Unit tests for the different kinds of parsers.
 

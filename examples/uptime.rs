@@ -52,17 +52,7 @@ fn main() {
 
     let time;
 
-    #[cfg(not(windows))]
-    {
-        vm.jit_compile().unwrap();
-
-        time = unsafe { vm.execute_program_jit().unwrap() };
-    }
-
-    #[cfg(windows)]
-    {
-        time = vm.execute_program().unwrap();
-    }
+    time = vm.execute_program().unwrap();
 
     let days    =  time / 10u64.pow(9)  / 60   / 60  / 24;
     let hours   = (time / 10u64.pow(9)  / 60   / 60) % 24;
